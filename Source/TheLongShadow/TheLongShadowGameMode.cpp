@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "TheLongShadowGameMode.h"
-#include "TheLongShadowCharacter.h"
+#include "BaseClass/TLSPlayerCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 ATheLongShadowGameMode::ATheLongShadowGameMode()
