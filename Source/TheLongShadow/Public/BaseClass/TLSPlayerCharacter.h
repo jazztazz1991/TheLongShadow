@@ -40,6 +40,10 @@ private:
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *MoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction *SprintAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction *SneakAction;
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -51,6 +55,12 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue &Value);
+
+	void PlayerJump();
+	void SprintOn();
+	void SprintOff();
+	void SneakOn();
+	void SneakOff();
 
 	virtual void NotifyControllerChanged() override;
 

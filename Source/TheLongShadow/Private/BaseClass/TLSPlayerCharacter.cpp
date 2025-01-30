@@ -45,6 +45,29 @@ void ATLSPlayerCharacter::Look(const FInputActionValue &Value)
         AddControllerPitchInput(LookAxisVector.Y);
     }
 }
+void ATLSPlayerCharacter::PlayerJump()
+{
+    if (ATLSCharacter::CanJump())
+    {
+        ATLSCharacter::HasJumped();
+    }
+}
+void ATLSPlayerCharacter::SprintOn()
+{
+    SetSprinting(true);
+}
+void ATLSPlayerCharacter::SprintOff()
+{
+    SetSprinting(false);
+}
+void ATLSPlayerCharacter::SneakOn()
+{
+    SetSneaking(true);
+}
+void ATLSPlayerCharacter::SneakOff()
+{
+    SetSneaking(false);
+}
 void ATLSPlayerCharacter::NotifyControllerChanged()
 {
     Super::NotifyControllerChanged();
@@ -65,11 +88,15 @@ void ATLSPlayerCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInput
     {
 
         // Jumping
-        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ATLSPlayerCharacter::PlayerJump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
         // Moving
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATLSPlayerCharacter::Move);
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ATLSPlayerCharacter::SprintOn);
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ATLSPlayerCharacter::SprintOff);
+        EnhancedInputComponent->BindAction(SneakAction, ETriggerEvent::Started, this, &ATLSPlayerCharacter::SneakOn);
+        EnhancedInputComponent->BindAction(SneakAction, ETriggerEvent::Completed, this, &ATLSPlayerCharacter::SneakOff);
 
         // Looking
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATLSPlayerCharacter::Look);

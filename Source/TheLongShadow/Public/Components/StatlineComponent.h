@@ -6,6 +6,16 @@
 #include "Components/ActorComponent.h"
 #include "StatlineComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class ECoreStat : uint8
+{
+	CS_HEALTH UMETA(DisplayName = "Health"),
+	CS_STAMINA UMETA(DisplayName = "Stamina"),
+	CS_HUNGER UMETA(DisplayName = "Hunger"),
+	CS_THIRST UMETA(DisplayName = "Thirst")
+
+};
+
 USTRUCT(BlueprintType)
 struct FCoreStat
 {
@@ -13,19 +23,42 @@ struct FCoreStat
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	float Current = 100;
+	float Current = 100.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	float Max = 100;
+	float Max = 100.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	float PerSecondTick = 1;
+	float PerSecondTick = 1.0f;
 
 public:
+	FCoreStat() {};
+	FCoreStat(const float &current, const float &max, const float &tick)
+	{
+		Current = current;
+		Max = max;
+		PerSecondTick = tick;
+	};
 	void TickStat(const float &DeltaTime)
 	{
 		Current = FMath::Clamp(Current + (PerSecondTick * DeltaTime), 0.0f, Max);
-	}
+	};
+	void Adjust(const float &amount)
+	{
+		Current = FMath::Clamp(Current + amount, 0.0f, Max);
+	};
+	float Percentile() const
+	{
+		return Current / Max;
+	};
+	void AdjustTick(const float &NewTick)
+	{
+		PerSecondTick = NewTick;
+	};
+	float GetCurrent() const
+	{
+		return Current;
+	};
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -63,15 +96,72 @@ class THELONGSHADOW_API UStatlineComponent : public UActorComponent
 	//    int currentLevel
 	//    int maxLevel
 
-public:
-	// Sets default values for this component's properties
-	UStatlineComponent();
+private:
+	class UCharacterMovementComponent *OwningCharacterMovementComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	FCoreStat Health;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	FCoreStat Stamina;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	FCoreStat Hunger = FCoreStat(100, 100, -0.025);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	FCoreStat Thirst = FCoreStat(100, 100, -0.05);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	bool bIsSprinting = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	bool bIsSneaking = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float SprintCostMultiplier = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float WalkSpeed = 125;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float SprintSpeed = 450;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float SneakSpeed = 75;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float JumpCost = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float SecondsForStaminaExhaustion = 5;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float CurrentStaminaExhaustion = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float StarvingHealthDamagePerSecond = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float DehydrationHealthDamagePerSecond = 1;
+
+	void TickStats(const float &DeltaTime);
+	void TickStamina(const float &DeltaTime);
+	bool TickHunger(const float &DeltaTime);
+	bool TickThirst(const float &DeltaTime);
+	bool IsValidSprinting();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:
+	// Sets default values for this component's properties
+	UStatlineComponent();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable)
+	void SetMovementCompReference(class UCharacterMovementComponent *Comp);
+
+	UFUNCTION(BlueprintCallable)
+	float GetStatPercentile(const ECoreStat Stat) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool CanSprint() const;
+	UFUNCTION(BlueprintCallable)
+	void SetSprinting(const bool &IsSprinting);
+	UFUNCTION(BlueprintCallable)
+	void SetSneaking(const bool &IsSneaking);
+	UFUNCTION(BlueprintCallable)
+	bool CanJump();
+	UFUNCTION(BlueprintCallable)
+	void HasJumped();
 };
