@@ -5,7 +5,7 @@
 
 void UStatlineComponent::TickStats(const float &DeltaTime)
 {
-	TickStamina(DeltaTime);
+	// TickStamina(DeltaTime);
 	TickHunger(DeltaTime);
 	TickThirst(DeltaTime);
 	if (TickHunger(DeltaTime) || TickThirst(DeltaTime))
@@ -14,32 +14,32 @@ void UStatlineComponent::TickStats(const float &DeltaTime)
 	}
 	Health.TickStat(DeltaTime);
 };
-void UStatlineComponent::TickStamina(const float &DeltaTime)
-{
-	if (CurrentStaminaExhaustion > 0)
-	{
-		CurrentStaminaExhaustion -= DeltaTime;
-		if (CurrentStaminaExhaustion <= 0)
-		{
-			SetSprinting(false);
-			CurrentStaminaExhaustion = 0;
-		}
-		return;
-	}
+// void UStatlineComponent::TickStamina(const float &DeltaTime)
+// {
+// 	if (CurrentStaminaExhaustion > 0)
+// 	{
+// 		CurrentStaminaExhaustion -= DeltaTime;
+// 		if (CurrentStaminaExhaustion <= 0)
+// 		{
+// 			SetSprinting(false);
+// 			CurrentStaminaExhaustion = 0;
+// 		}
+// 		return;
+// 	}
 
-	if (bIsSprinting && IsValidSprinting())
-	{
-		Stamina.TickStat(0 - abs(DeltaTime * SprintCostMultiplier));
-		if (Stamina.GetCurrent() <= 0)
-		{
-			SetSprinting(false);
-			CurrentStaminaExhaustion = SecondsForStaminaExhaustion;
-		}
-		return;
-	}
+// 	if (bIsSprinting && IsValidSprinting())
+// 	{
+// 		Stamina.TickStat(0 - abs(DeltaTime * SprintCostMultiplier));
+// 		if (Stamina.GetCurrent() <= 0)
+// 		{
+// 			SetSprinting(false);
+// 			CurrentStaminaExhaustion = SecondsForStaminaExhaustion;
+// 		}
+// 		return;
+// 	}
 
-	Stamina.TickStat(DeltaTime);
-};
+// 	Stamina.TickStat(DeltaTime);
+// };
 bool UStatlineComponent::IsValidSprinting()
 {
 	return OwningCharacterMovementComp->Velocity.Length() > WalkSpeed && !OwningCharacterMovementComp->IsFalling();
@@ -104,8 +104,8 @@ float UStatlineComponent::GetStatPercentile(const ECoreStat Stat) const
 	{
 	case ECoreStat::CS_HEALTH:
 		return Health.Percentile();
-	case ECoreStat::CS_STAMINA:
-		return Stamina.Percentile();
+	// case ECoreStat::CS_STAMINA:
+	// 	return Stamina.Percentile();
 	case ECoreStat::CS_HUNGER:
 		return Hunger.Percentile();
 	case ECoreStat::CS_THIRST:
@@ -118,7 +118,7 @@ float UStatlineComponent::GetStatPercentile(const ECoreStat Stat) const
 
 bool UStatlineComponent::CanSprint() const
 {
-	return Stamina.GetCurrent() > 0.0f;
+	return true;
 }
 
 void UStatlineComponent::SetSprinting(const bool &IsSprinting)
@@ -144,10 +144,9 @@ void UStatlineComponent::SetSneaking(const bool &IsSneaking)
 }
 bool UStatlineComponent::CanJump()
 {
-	return Stamina.GetCurrent() > JumpCost;
+	return true;
 }
 
 void UStatlineComponent::HasJumped()
 {
-	Stamina.Adjust(0 - JumpCost);
 }
