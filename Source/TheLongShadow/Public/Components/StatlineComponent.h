@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Interface/SaveActorInterface.h"
 #include "StatlineComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -22,13 +23,13 @@ struct FCoreStat
 	GENERATED_USTRUCT_BODY()
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadonly, SaveGame, meta = (AllowPrivateAccess = "true"))
 	float Current = 100.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadonly, SaveGame, meta = (AllowPrivateAccess = "true"))
 	float Max = 100.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadonly, SaveGame, meta = (AllowPrivateAccess = "true"))
 	float PerSecondTick = 1.0f;
 
 public:
@@ -59,10 +60,32 @@ public:
 	{
 		return Current;
 	};
+
+	FString GetSaveString()
+	{
+		FString Ret = FString::SanitizeFloat(Current);
+		Ret += "|";
+		Ret += FString::SanitizeFloat(Max);
+		Ret += "|";
+		Ret += FString::SanitizeFloat(PerSecondTick);
+		return Ret;
+	}
+
+	void UpdateFromSaveString(TArray<FString> Parts)
+	{
+		if (Parts.Num() != 3)
+		{
+			// TODO: Log error
+			return;
+		}
+		Current = FCString::Atof(*Parts[0]);
+		Max = FCString::Atof(*Parts[1]);
+		PerSecondTick = FCString::Atof(*Parts[2]);
+	}
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class THELONGSHADOW_API UStatlineComponent : public UActorComponent
+class THELONGSHADOW_API UStatlineComponent : public UActorComponent, public ISaveActorInterface
 {
 	GENERATED_BODY()
 
@@ -99,13 +122,13 @@ class THELONGSHADOW_API UStatlineComponent : public UActorComponent
 private:
 	class UCharacterMovementComponent *OwningCharacterMovementComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", SaveGame, meta = (AllowPrivateAccess = "true"))
 	FCoreStat Health;
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	// FCoreStat Stamina;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", SaveGame, meta = (AllowPrivateAccess = "true"))
 	FCoreStat Hunger = FCoreStat(100, 100, -0.025);
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", SaveGame, meta = (AllowPrivateAccess = "true"))
 	FCoreStat Thirst = FCoreStat(100, 100, -0.05);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
@@ -164,4 +187,7 @@ public:
 	bool CanJump();
 	UFUNCTION(BlueprintCallable)
 	void HasJumped();
+
+	virtual FSaveComponentData GetComponentSaveData_Implementation();
+	virtual void SetComponentSaveData_Implementation(FSaveComponentData Data);
 };

@@ -11,12 +11,19 @@ ATLSCharacter::ATLSCharacter()
 
 	Statline = CreateDefaultSubobject<UStatlineComponent>(TEXT("Statline"));
 	Statline->SetMovementCompReference(GetCharacterMovement());
+
+	SaveActorID = FGuid::NewGuid();
 }
 
 // Called when the game starts or when spawned
 void ATLSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!SaveActorID.IsValid())
+	{
+		SaveActorID = FGuid::NewGuid();
+	}
 }
 
 bool ATLSCharacter::CanJump() const
@@ -50,4 +57,18 @@ void ATLSCharacter::Tick(float DeltaTime)
 void ATLSCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+FGuid ATLSCharacter::GetActorSaveID_Implementation()
+{
+	return SaveActorID;
+}
+
+FSaveActorData ATLSCharacter::GetSaveData_Implementation()
+{
+	FSaveActorData Ret;
+	Ret.ActorClass = this->GetClass();
+	Ret.ActorTransform = this->GetActorTransform();
+	Ret.WasSpawned = this->WasSpawned;
+	return Ret;
 }

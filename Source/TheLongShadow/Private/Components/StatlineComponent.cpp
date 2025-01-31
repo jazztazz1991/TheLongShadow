@@ -2,6 +2,7 @@
 
 #include "Components/StatlineComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "TLSUtils.h"
 
 void UStatlineComponent::TickStats(const float &DeltaTime)
 {
@@ -104,12 +105,12 @@ float UStatlineComponent::GetStatPercentile(const ECoreStat Stat) const
 	{
 	case ECoreStat::CS_HEALTH:
 		return Health.Percentile();
-	// case ECoreStat::CS_STAMINA:
-	// 	return Stamina.Percentile();
 	case ECoreStat::CS_HUNGER:
 		return Hunger.Percentile();
 	case ECoreStat::CS_THIRST:
 		return Thirst.Percentile();
+	// case ECoreStat::CS_STAMINA:
+	// 	return Stamina.Percentile();
 	default:
 		break;
 	}
@@ -149,4 +150,43 @@ bool UStatlineComponent::CanJump()
 
 void UStatlineComponent::HasJumped()
 {
+}
+
+FSaveComponentData UStatlineComponent::GetComponentSaveData_Implementation()
+{
+	FSaveComponentData Ret;
+	Ret.ComponentClass = this->GetClass();
+	Ret.RawData.Add(Health.GetSaveString());
+	Ret.RawData.Add(Hunger.GetSaveString());
+	Ret.RawData.Add(Thirst.GetSaveString());
+	// Ret.RawData.Add(Stamina.GetSaveString());
+
+	return Ret;
+}
+
+void UStatlineComponent::SetComponentSaveData_Implementation(FSaveComponentData Data)
+{
+	TArray<FString> Parts;
+	for (int i = 0; i < Data.RawData.Num(); i++)
+	{
+		Parts.Empty();
+		Parts = ChopString(Data.RawData[i], '|');
+		switch (i)
+		{
+		case 0:
+			Health.UpdateFromSaveString(Parts);
+			break;
+		case 1:
+			Hunger.UpdateFromSaveString(Parts);
+			break;
+		case 2:
+			Thirst.UpdateFromSaveString(Parts);
+			break;
+		// case 3:
+		// 	Stamina.UpdateFromSaveString(Parts);
+		default:
+			// Log error
+			break;
+		}
+	}
 }
