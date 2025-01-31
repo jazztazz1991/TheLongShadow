@@ -2,7 +2,6 @@
 
 #include "Game/TLSSaveGame.h"
 #include "Interface/SaveActorInterface.h"
-#include "TLSSaveGame.h"
 
 void UTLSSaveGame::SetSaveActorData(TMap<FGuid, FSaveActorData> Data)
 {

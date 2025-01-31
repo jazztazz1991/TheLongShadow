@@ -35,6 +35,7 @@ protected:
 	void SetSneaking(const bool &IsSneaking);
 
 public:
+	ATLSCharacter();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

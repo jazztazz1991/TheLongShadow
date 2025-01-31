@@ -48,6 +48,7 @@ private:
 	void LoadGame();
 
 	void GatherPlayerData();
+	void SetPlayerData();
 
 public:
 	UFUNCTION(BlueprintCallable)

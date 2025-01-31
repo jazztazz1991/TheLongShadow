@@ -2,7 +2,6 @@
 
 #include "BaseClass/TLSCharacter.h"
 #include "Components/StatlineComponent.h"
-#include "TLSCharacter.h"
 
 // Sets default values
 ATLSCharacter::ATLSCharacter()
