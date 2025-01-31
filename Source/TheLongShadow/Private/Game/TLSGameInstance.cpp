@@ -68,6 +68,8 @@ void UTLSGameInstance::GatherActorData()
 
         SaveableActorData.Add(SAI, SAD);
     }
+
+    GatherPlayerData();
 }
 
 void UTLSGameInstance::LoadGame()
@@ -93,6 +95,7 @@ void UTLSGameInstance::LoadGame()
                 continue;
             }
             // Set Actor GUID
+            Inter->SetActorGUID(SAD.Key);
         }
     }
 
@@ -157,6 +160,10 @@ void UTLSGameInstance::LoadGame()
             }
         }
     }
+}
+void UTLSGameInstance::GatherPlayerData()
+{
+    ACharacter *PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 void UTLSGameInstance::AddActorData(const FGuid &ActorID, FSaveActorData ActorData)
 {

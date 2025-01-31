@@ -105,6 +105,8 @@ void ATLSPlayerCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInput
 void ATLSPlayerCharacter::BeginPlay()
 {
     Super::BeginPlay();
+    ATLSCharacter::BeginPlay();
+    SaveActorID
 }
 ATLSPlayerCharacter::ATLSPlayerCharacter()
 {

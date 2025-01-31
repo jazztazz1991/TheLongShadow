@@ -2,6 +2,7 @@
 
 #include "Game/TLSSaveGame.h"
 #include "Interface/SaveActorInterface.h"
+#include "TLSSaveGame.h"
 
 void UTLSSaveGame::SetSaveActorData(TMap<FGuid, FSaveActorData> Data)
 {
@@ -20,4 +21,14 @@ void UTLSSaveGame::SetCurrentLevel(const FName Level)
 FName UTLSSaveGame::GetCurrentLevel()
 {
     return CurrentlyLoadedLevel;
+}
+
+void UTLSSaveGame::SetPlayerData(FSaveActorData Data)
+{
+    PlayerData = Data;
+}
+
+FSaveActorData UTLSSaveGame::GetPlayerData()
+{
+    return PlayerData;
 }

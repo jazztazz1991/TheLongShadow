@@ -30,17 +30,24 @@ class THELONGSHADOW_API UTLSGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 private:
+	UPROPERTY()
 	TMap<FGuid, FSaveActorData> SaveableActorData;
 	UPROPERTY()
 	class UTLSSaveGame *SaveGameObject = nullptr;
+	UPROPERTY()
 	FString SaveGameName = TEXT("DEFAULT");
+	UPROPERTY()
 	FName CurrentlyLoadedLevel = "NONE";
+	UPROPERTY()
+	FSaveActorData PlayerData;
 
 	UTLSGameInstance();
 
 	void CreateSaveSlot();
 	void GatherActorData();
 	void LoadGame();
+
+	void GatherPlayerData();
 
 public:
 	UFUNCTION(BlueprintCallable)

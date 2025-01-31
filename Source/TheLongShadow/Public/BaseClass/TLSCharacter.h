@@ -14,19 +14,16 @@ class THELONGSHADOW_API ATLSCharacter : public ACharacter, public ISaveActorInte
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, SaveGame, meta = (AllowPrivateAccess = "true"))
+	bool WasSpawned = false;
+
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, SaveGame, meta = (AllowPrivateAccess = "true"))
 	class UStatlineComponent *Statline;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, SaveGame, meta = (AllowPrivateAccess = "true"))
 	FGuid SaveActorID;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, SaveGame, meta = (AllowPrivateAccess = "true"))
-	bool WasSpawned = false;
-
-public:
-	// Sets default values for this character's properties
-	ATLSCharacter();
-
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	bool CanJump() const;
@@ -46,4 +43,5 @@ public:
 
 	FGuid GetActorSaveID_Implementation();
 	FSaveActorData GetSaveData_Implementation();
+	void SetActorGUID_Implementation(const FGuid &NewGuid);
 };

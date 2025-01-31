@@ -2,6 +2,7 @@
 
 #include "BaseClass/TLSCharacter.h"
 #include "Components/StatlineComponent.h"
+#include "TLSCharacter.h"
 
 // Sets default values
 ATLSCharacter::ATLSCharacter()
@@ -71,4 +72,13 @@ FSaveActorData ATLSCharacter::GetSaveData_Implementation()
 	Ret.ActorTransform = this->GetActorTransform();
 	Ret.WasSpawned = this->WasSpawned;
 	return Ret;
+}
+
+void ATLSCharacter::SetActorGUID_Implementation(const FGuid &NewGuid)
+{
+	if (SaveActorID.IsValid())
+	{
+		SaveActorID.Invalidate();
+	}
+	SaveActorID = NewGuid;
 }
