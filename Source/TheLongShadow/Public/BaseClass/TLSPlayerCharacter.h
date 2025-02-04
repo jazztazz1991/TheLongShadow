@@ -29,6 +29,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent *FollowCamera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USphereComponent *InteractionTrigger;
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext *DefaultMappingContext;
@@ -44,10 +47,23 @@ private:
 	UInputAction *SprintAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *SneakAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *LookAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	bool bEnableRayTrace = true;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	TArray<AActor *> InteractableActors;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	float InteractionTraceLength = 200;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	AActor* InteractionActor = nullptr;
+
+	void TraceForInteraction();
 
 protected:
 	/** Called for movement input */
@@ -61,6 +77,7 @@ protected:
 	void SprintOff();
 	void SneakOn();
 	void SneakOff();
+	void OnInteract();
 
 	virtual void NotifyControllerChanged() override;
 
@@ -71,8 +88,20 @@ protected:
 public:
 	ATLSPlayerCharacter();
 
+	virtual void Tick(float DeltaTime) override;
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent *GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent *GetFollowCamera() const { return FollowCamera; }
+
+	/** Returns InterationTrigger subobject **/
+	UFUNCTION(Category = "Interaction")
+	void OnInteractionTriggerOverlapBegin(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+	UFUNCTION(Category = "Interaction")
+	void OnInteractionTriggerOverlapEnd(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComponent, int32 OtherBodyIndex);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdateInteractionText();
+	void UpdateInteractionText_Implementation();
 };

@@ -10,7 +10,31 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Components/SphereComponent.h"
+#include "Interface/InteractionInterface.h"
+#include "Logger.h"
 
+void ATLSPlayerCharacter::TraceForInteraction()
+{
+    FCollisionQueryParams LTParams = FCollisionQueryParams(FName(TEXT("InteractionTrace")), true, this);
+    LTParams.bReturnPhysicalMaterial = false;
+    LTParams.bReturnFaceIndex = false;
+    GetWorld()->DebugDrawTraceTag = TEXT("InteractionTrace");
+    FHitResult LTHit(ForceInit);
+    FVector LTStart = FollowCamera->GetComponentLocation();
+    float SearchLength = (FollowCamera->GetComponentLocation() - CameraBoom->GetComponentLocation()).Length();
+    SearchLength += InteractionTraceLength;
+    FVector LTEnd = (FollowCamera->GetForwardVector() * SearchLength) + LTStart;
+
+    GetWorld()->LineTraceSingleByChannel(LTHit, LTStart, LTEnd, ECC_Visibility, LTParams);
+
+    if (!LTHit.bBlockingHit || LTHit.GetActor()->Implements<UInteractionInterface>())
+    {
+        InteractionActor = nullptr;
+        return;
+    }
+    InteractionActor = LTHit.GetActor();
+}
 void ATLSPlayerCharacter::Move(const FInputActionValue &Value)
 {
     // input is a Vector2D
@@ -68,6 +92,21 @@ void ATLSPlayerCharacter::SneakOff()
 {
     SetSneaking(false);
 }
+void ATLSPlayerCharacter::OnInteract()
+{
+    if (InteractionActor == nullptr)
+    {
+        return;
+    }
+    IInteractionInterface *Inter = Cast<IInteractionInterface>(InteractionActor);
+    if (Inter == nullptr)
+    {
+        Logger::GetInstance()->AddMessage("ALTSPlayerCharacter::OnInteract - Failed to cast to InteractionInterface", ERRORLEVEL::EL_ERROR);
+        return;
+    }
+    // Inter->Interact_Implementation(this);
+    Inter->Execute_Interact(InteractionActor, this);
+}
 void ATLSPlayerCharacter::NotifyControllerChanged()
 {
     Super::NotifyControllerChanged();
@@ -97,6 +136,7 @@ void ATLSPlayerCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInput
         EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ATLSPlayerCharacter::SprintOff);
         EnhancedInputComponent->BindAction(SneakAction, ETriggerEvent::Started, this, &ATLSPlayerCharacter::SneakOn);
         EnhancedInputComponent->BindAction(SneakAction, ETriggerEvent::Completed, this, &ATLSPlayerCharacter::SneakOff);
+        EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ATLSPlayerCharacter::OnInteract);
 
         // Looking
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATLSPlayerCharacter::Look);
@@ -144,4 +184,44 @@ ATLSPlayerCharacter::ATLSPlayerCharacter()
 
     // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character)
     // are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+    InteractionTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("Interaction Trigger Volume"));
+    InteractionTrigger->SetupAttachment(RootComponent);
+    InteractionTrigger->SetRelativeScale3D(FVector(10));
+    InteractionTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATLSPlayerCharacter::OnInteractionTriggerOverlapBegin);
+    InteractionTrigger->OnComponentEndOverlap.AddDynamic(this, &ATLSPlayerCharacter::OnInteractionTriggerOverlapEnd);
+
+    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bTickEvenWhenPaused = false;
+}
+void ATLSPlayerCharacter::Tick(float DeltaTime)
+{
+    if (bEnableRayTrace)
+    {
+        TraceForInteraction();
+    }
+}
+void ATLSPlayerCharacter::OnInteractionTriggerOverlapBegin(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{
+    if (!OtherActor->Implements<UInteractionInterface>())
+    {
+        return;
+    }
+    InteractableActors.Add(OtherActor);
+    bEnableRayTrace = true;
+}
+
+void ATLSPlayerCharacter::OnInteractionTriggerOverlapEnd(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComponent, int32 OtherBodyIndex)
+{
+    if (!OtherActor->Implements<UInteractionInterface>())
+    {
+        return;
+    }
+    InteractableActors.Remove(OtherActor);
+    bEnableRayTrace = InteractableActors.Num() > 0;
+}
+
+void ATLSPlayerCharacter::UpdateInteractionText_Implementation()
+{
+    UpdateInteractionText();
 }

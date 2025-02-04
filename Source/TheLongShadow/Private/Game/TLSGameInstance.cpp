@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "EngineUtils.h"
 #include <Serialization/ObjectAndNameAsStringProxyArchive.h>
+#include "Logger.h"
 
 UTLSGameInstance::UTLSGameInstance()
 {
@@ -77,7 +78,7 @@ void UTLSGameInstance::LoadGame()
 {
     if (!UGameplayStatics::DoesSaveGameExist(SaveGameName, 0))
     {
-        // TODO: Add loggin and error message about missing save game
+        Logger::GetInstance()->AddMessage("Load game called with Invalid save name", ERRORLEVEL::EL_WARNING);
         return;
     }
 
