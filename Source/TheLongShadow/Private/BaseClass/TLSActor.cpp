@@ -28,7 +28,11 @@ void ATLSActor::Tick(float DeltaTime)
 
 FSaveActorData ATLSActor::GetSaveData_Implementation()
 {
-	return FSaveActorData();
+	FSaveActorData Ret;
+	Ret.ActorTransform = this->GetActorTransform();
+	Ret.ActorClass = this->GetClass();
+	Ret.WasSpawned = false;
+	return Ret;
 }
 
 void ATLSActor::SetActorGUID_Implementation(const FGuid &NewGuid)

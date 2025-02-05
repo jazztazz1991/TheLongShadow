@@ -54,20 +54,23 @@ class THELONGSHADOW_API ISaveActorInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FGuid GetActorSaveID();						   // Blueprint Version of GetActorID
 	virtual FGuid GetActorSaveID_Implementation(); // C++ Version of GetActorID
-	UFUNCTION(BlueprintNativeEvent)
-	void SetActorGUID(const FGuid& NewGuid);
-	void SetActorGUID_Implementation(const FGuid& NewGuid);
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetActorGUID(const FGuid &NewGuid);
+	void SetActorGUID_Implementation(const FGuid &NewGuid);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FSaveActorData GetSaveData();						 // Blueprint Version of GetSaveData
 	virtual FSaveActorData GetSaveData_Implementation(); // C++ Version of GetSaveData
-	UFUNCTION(BlueprintNativeEvent)
-	FSaveComponentData GetComponentSaveData();					 // Blueprint Version of GetComponentSaveData
-	virtual FSaveComponentData GetComponentSaveData_Implementation(); // C++ Version of GetComponentSaveData
-	UFUNCTION(BlueprintNativeEvent)
-	void SetComponentSaveData(FSaveComponentData Data); // Blueprint Version of SetComponentSaveData
-	virtual void SetComponentSaveData_Implementation(FSaveComponentData Data); // C++ Version of SetComponentSaveData
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void UpdateFromSave();
+	void UpdateFromSave_Implementation(FSaveActorData Data);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FSaveComponentData GetComponentSaveData();						  // Blueprint Version of GetComponentSaveData
+	virtual FSaveComponentData GetComponentSaveData_Implementation(); // C++ Version of GetComponentSaveData
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetComponentSaveData(FSaveComponentData Data);						   // Blueprint Version of SetComponentSaveData
+	virtual void SetComponentSaveData_Implementation(FSaveComponentData Data); // C++ Version of SetComponentSaveData
 };

@@ -4,13 +4,13 @@
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Components/SphereComponent.h"
 #include "Interface/InteractionInterface.h"
 #include "Logger.h"
 
@@ -19,7 +19,7 @@ void ATLSPlayerCharacter::TraceForInteraction()
     FCollisionQueryParams LTParams = FCollisionQueryParams(FName(TEXT("InteractionTrace")), true, this);
     LTParams.bReturnPhysicalMaterial = false;
     LTParams.bReturnFaceIndex = false;
-    GetWorld()->DebugDrawTraceTag = TEXT("InteractionTrace");
+    GetWorld()->DebugDrawTraceTag = DEBUG_SHOW_INTERACTION_TRACE ? TEXT("InteractionTrace") : GetWorld()->DebugDrawTraceTag = TEXT("NONE");
     FHitResult LTHit(ForceInit);
     FVector LTStart = FollowCamera->GetComponentLocation();
     float SearchLength = (FollowCamera->GetComponentLocation() - CameraBoom->GetComponentLocation()).Length();
@@ -28,7 +28,8 @@ void ATLSPlayerCharacter::TraceForInteraction()
 
     GetWorld()->LineTraceSingleByChannel(LTHit, LTStart, LTEnd, ECC_Visibility, LTParams);
 
-    if (!LTHit.bBlockingHit || LTHit.GetActor()->Implements<UInteractionInterface>())
+    UpdateInteractionText_Implementation();
+    if (!LTHit.bBlockingHit || !LTHit.GetActor()->Implements<UInteractionInterface>())
     {
         InteractionActor = nullptr;
         return;

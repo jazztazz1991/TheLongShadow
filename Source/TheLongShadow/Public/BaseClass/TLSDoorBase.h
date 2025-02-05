@@ -16,10 +16,10 @@ class THELONGSHADOW_API ATLSDoorBase : public ATLSActor, public IInteractionInte
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, SaveGame, meta = (AllowPrivateAccess = "true"))
 	bool bIsOpen = false;
-public:
 
+public:
 	ATLSDoorBase();
 
 	FText GetInteractionText_Implementation();

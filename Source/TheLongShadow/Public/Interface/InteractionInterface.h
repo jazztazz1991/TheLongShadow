@@ -22,14 +22,14 @@ class THELONGSHADOW_API IInteractionInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FText GetInteractionText();
 	virtual FText GetInteractionText_Implementation();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Interact(class ATLSCharacter *Caller);
 	void Interact_Implemantation(class ATLSCharacter *Caller);
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool isInteractable() const;
 	bool isInteractable_Implementation() const;
 };

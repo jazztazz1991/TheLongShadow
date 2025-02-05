@@ -11,18 +11,19 @@ UCLASS()
 class THELONGSHADOW_API ATLSActor : public AActor, public ISaveActorInterface
 {
 	GENERATED_BODY()
-	
-	FGuid SaveID;
-
-public:
-	// Sets default values for this actor's properties
-	ATLSActor();
+private:
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FGuid SaveID;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FGuid SaveID;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
+ 	ATLSActor();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
