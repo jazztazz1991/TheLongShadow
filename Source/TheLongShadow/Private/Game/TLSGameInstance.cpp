@@ -125,7 +125,8 @@ void UTLSGameInstance::LoadGame()
         FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
         Ar.ArIsSaveGame = true;
         Actor->Serialize(Ar);
-
+        // Inter->UpdateFromSave();
+        Inter->Execute_UpdateFromSave(Actor);
         for (auto ActorComp : Actor->GetComponents())
         {
             if (!ActorComp->Implements<USaveActorInterface>())

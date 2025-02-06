@@ -10,13 +10,16 @@ FGuid ISaveActorInterface::GetActorSaveID_Implementation()
     Ret.Invalidate();
     return FGuid();
 }
-void ISaveActorInterface::SetActorGUID_Implementation(const FGuid& NewGuid)
+void ISaveActorInterface::SetActorGUID_Implementation(const FGuid &NewGuid)
 {
-    
 }
 FSaveActorData ISaveActorInterface::GetSaveData_Implementation()
 {
     return FSaveActorData();
+}
+void ISaveActorInterface::UpdateFromSave_Implementation()
+{
+    UpdateFromSave();
 }
 FSaveComponentData ISaveActorInterface::GetComponentSaveData_Implementation()
 {

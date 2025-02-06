@@ -12,22 +12,21 @@ class THELONGSHADOW_API ATLSActor : public AActor, public ISaveActorInterface
 {
 	GENERATED_BODY()
 private:
-
 protected:
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGuid SaveID;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FGuid SaveID;
+	bool bWasSpawned = false;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
- 	ATLSActor();
+	ATLSActor();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual FSaveActorData GetSaveData_Implementation();
 	void SetActorGUID_Implementation(const FGuid &NewGuid);
 	virtual FGuid GetActorSaveID_Implementation();
+	virtual void UpdateFromSave_Implementation();
 };

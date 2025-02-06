@@ -65,8 +65,7 @@ public:
 	virtual FSaveActorData GetSaveData_Implementation(); // C++ Version of GetSaveData
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateFromSave();
-	void UpdateFromSave_Implementation(FSaveActorData Data);
-
+	void UpdateFromSave_Implementation();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FSaveComponentData GetComponentSaveData();						  // Blueprint Version of GetComponentSaveData
 	virtual FSaveComponentData GetComponentSaveData_Implementation(); // C++ Version of GetComponentSaveData

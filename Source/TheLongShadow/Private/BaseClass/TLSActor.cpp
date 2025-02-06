@@ -31,7 +31,7 @@ FSaveActorData ATLSActor::GetSaveData_Implementation()
 	FSaveActorData Ret;
 	Ret.ActorTransform = this->GetActorTransform();
 	Ret.ActorClass = this->GetClass();
-	Ret.WasSpawned = false;
+	Ret.WasSpawned = bWasSpawned;
 	return Ret;
 }
 
@@ -47,3 +47,11 @@ FGuid ATLSActor::GetActorSaveID_Implementation()
 {
 	return SaveID;
 }
+
+void ATLSActor::UpdateFromSave_Implementation()
+{
+	// UpdateFromSave();
+	Execute_UpdateFromSave(this);
+	// non-blueprint logic goes here
+}
+
